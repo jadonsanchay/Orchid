@@ -2,6 +2,7 @@ package testutils
 
 import (
 	"context"
+	"math"
 	"orchid/pkg/embedding"
 )
 
@@ -67,12 +68,10 @@ func (m *MockEmbeddingClient) GetEmbedding(ctx context.Context, text string) ([]
 	// Normalize vector to keep length close to 1.0 (helpful for unit tests simulating cosine similarity)
 	if sum > 0 {
 		// Calculate L2 norm
-		norm := float32(1.0) // We can keep norm simple
-		// For simplicity, we divide by the sqrt of sum
-		// But in a simple test, even a raw non-normalized vector works, 
-		// though normalization is cleaner. Let's do it:
-		importMath := float32(0.1) // simple scale
-		_ = importMath
+		norm := float32(math.Sqrt(float64(sum)))
+		for i := 0; i < dim; i++ {
+			vector[i] = vector[i] / norm
+		}
 	}
 
 	return vector, nil

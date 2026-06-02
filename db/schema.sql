@@ -38,3 +38,31 @@ CREATE TABLE IF NOT EXISTS jobs (
 -- requires all indexed values to have the same dimension. Ensure consistency
 -- in the dimension size inserted if using HNSW/IVFFlat indexes.
 -- ==========================================
+
+-- ==========================================
+-- ORCHESTRATION ENGINE STATE TABLES
+-- ==========================================
+
+-- Create workflow runs table to track overall pipeline state
+CREATE TABLE IF NOT EXISTS workflow_runs (
+    id            BIGSERIAL PRIMARY KEY,
+    user_id       TEXT NOT NULL,
+    workflow_type TEXT NOT NULL,
+    status        TEXT NOT NULL DEFAULT 'pending',  -- pending|running|completed|failed
+    current_step  TEXT,
+    created_at    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create task runs table to checkpoint individual step execution and outputs
+CREATE TABLE IF NOT EXISTS task_runs (
+    id            BIGSERIAL PRIMARY KEY,
+    run_id        BIGINT NOT NULL REFERENCES workflow_runs(id) ON DELETE CASCADE,
+    task_name     TEXT NOT NULL,
+    status        TEXT NOT NULL DEFAULT 'pending',  -- pending|running|completed|failed
+    attempt_count INT NOT NULL DEFAULT 0,
+    last_error    TEXT,
+    output        JSONB,
+    updated_at    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+

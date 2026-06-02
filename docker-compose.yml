@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # Local Redis instance for workflow queue management
+  redis:
+    image: redis:7-alpine
+    container_name: orchid-redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  # Optional local Postgres with pgvector for offline integration tests
+  postgres-test:
+    image: pgvector/pgvector:pg16
+    container_name: orchid-postgres-test
+    environment:
+      POSTGRES_USER: orchid
+      POSTGRES_PASSWORD: orchid
+      POSTGRES_DB: orchid
+    ports:
+      - "5433:5432" # mapped to 5433 to avoid port collisions with any local PostgreSQL instance
+    volumes:
+      - pgdata-test:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata-test:

@@ -5,10 +5,13 @@ import (
 	"os"
 	"testing"
 
+	"orchid/pkg/utils"
+
 	"github.com/jackc/pgx/v5"
 )
 
 func TestPostgresJobRepository_Integration(t *testing.T) {
+	utils.LoadEnv() // Load .env file configurations locally
 	// The integration test only runs if a test database URL is supplied.
 	// Example: TEST_DATABASE_URL="postgres://postgres:password@localhost:5432/postgres?sslmode=disable"
 	dbURL := os.Getenv("TEST_DATABASE_URL")

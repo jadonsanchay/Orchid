@@ -13,11 +13,14 @@ import (
 	"orchid/pkg/embedding"
 	"orchid/pkg/repository"
 	"orchid/pkg/task"
+	"orchid/pkg/utils"
 
 	"github.com/jackc/pgx/v5"
 )
 
 func main() {
+	utils.LoadEnv() // Load local .env file variables
+
 	fmt.Println("==========================================================================")
 	fmt.Println("                     Orchid Vector Embedding CLI Demo                     ")
 	fmt.Println("==========================================================================")
@@ -56,8 +59,9 @@ func main() {
 	}
 
 	if dbURL != "" {
+		escapedURL := utils.EscapeConnectionURI(dbURL)
 		fmt.Println("[2/4] Connecting to Supabase database...")
-		conn, err = pgx.Connect(ctx, dbURL)
+		conn, err = pgx.Connect(ctx, escapedURL)
 		if err != nil {
 			log.Fatalf("Failed to connect to database: %v", err)
 		}

@@ -1,0 +1,29 @@
+# Orchid Project Development Rules & AI Guidelines
+
+These rules govern all AI assistance, code generation, and development patterns in the Orchid codebase. They must be followed strictly by any AI agent assisting on this repository.
+
+---
+
+## 1. No "Vibe Coding" & Code Limits
+
+- **Explain Before Code**: Do not output or write code changes without first explaining the proposed design and logic. Wait for user review/feedback.
+- **Small Incremental Steps**: Break down complex tasks into micro-features. Limit single-step code edits to **under 100 lines** of modified code at a time.
+- **No Unverifiable Magic**: Avoid introducing complex logic, black-box helper routines, or libraries that the user has not explicitly reviewed and understood.
+- **Run & Verify**: Every code change must end with a checkpoint where the code compiles and can be run or tested.
+
+---
+
+## 2. Proper Documentation
+
+- **Idiomatic Go Docstrings**: Every public interface, structure, method, and function must be documented using standard Go comments (sentence format starting with the name of the symbol).
+- **Update README.md**: Any architectural changes, new endpoints, or configuration keys must be documented in the root-level `README.md`.
+- **Comment Rationale**: When writing systems code (concurrency, DB transactions, queue operations), write comments explaining *why* a particular strategy (e.g. locks, contexts, transaction isolation) was chosen.
+
+---
+
+## 3. Architecture & Code Conventions
+
+- **Supabase Integration**: Ensure database interaction works nicely with Supabase's hosted Postgres instance (pooling, SSL, standard drivers). Special symbols in passwords must be URL-escaped using `utils.EscapeConnectionURI`.
+- **Pluggable & Stateful Tasks**: Keep tasks isolated. Tasks must implement the domain task interface where inputs and outputs are structured maps, facilitating state recovery.
+- **Idempotency**: All workflow tasks must be designed as idempotent steps. If a task fails or the container crashes mid-execution, re-running the task must not cause side effects.
+- **No Third-Party Bloat**: Prefer Go standard library (`net/http`, `bufio`, `os`) for HTTP routing and configuration parsing to keep the project clean, fast, and easily understandable.
